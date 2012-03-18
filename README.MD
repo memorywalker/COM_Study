@@ -1,0 +1,1 @@
+This is a COM study example which used for custom callback interface and connectionpoints.
