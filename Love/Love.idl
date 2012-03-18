@@ -1,0 +1,53 @@
+// Love.idl : Love 的 IDL 源
+//
+
+// 此文件将由 MIDL 工具处理以
+// 产生类型库(Love.tlb)和封送处理代码。
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(0041A9E5-C099-4fc5-8133-6AF5C55209D0),
+	pointer_default(unique)
+]
+interface ICallback : IUnknown{
+	[, helpstring("Event for find girls")] HRESULT OnFindGirl([in] LONG nums);
+};
+
+[
+	object,
+	uuid(991FF17A-8C41-4071-A823-FFE28437C8A4),
+	pointer_default(unique)
+]
+interface IPeople : IUnknown{
+	[, helpstring("Find nums girls")] HRESULT GetGirl([in] LONG nums);
+};
+
+[
+	uuid(5AAF5835-9316-4214-B1EA-9F5DB998F65B),
+	version(1.0),
+]
+library LoveLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(07E7E368-0B65-40D4-9BB0-18916559C070)		
+	]
+	dispinterface _IPeopleEvents
+	{
+		properties:
+		methods:
+	};
+	[
+		uuid(3DD99A90-6920-404E-9264-2F97F146A3C4)		
+	]
+	coclass People
+	{
+		[default] interface IPeople;
+		[default, source] dispinterface _IPeopleEvents;
+		[source] interface ICallback;
+	};
+};
+
