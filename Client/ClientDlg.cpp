@@ -49,12 +49,12 @@ BOOL CClientDlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
 	AfxOleInit();	// 初始化COM
 
-	HRESULT hr = m_comObj.CreateInstance(__uuidof(People));
-	if( FAILED( hr ) )
-	{
-		AfxMessageBox( _T("没有注册还是没有初始化？") );
-		CDialog::OnCancel();
-	}
+	//HRESULT hr = m_comObj.CreateInstance(__uuidof(People));  // import tlb with no_namespaces but not named_guids
+	//if( FAILED( hr ) )
+	//{
+	//	AfxMessageBox( _T("没有注册还是没有初始化？") );
+	//	CDialog::OnCancel();
+	//}
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -100,46 +100,75 @@ HCURSOR CClientDlg::OnQueryDragIcon()
 void CClientDlg::OnBnClickedBtnFind()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	// 获取Edit控件的值
+	CString str;
+	CWnd *pWnd = GetDlgItem(IDC_NUM);
+	pWnd->GetWindowText(str);
+	long lvalue = 0;
+	_stscanf_s(str, _T("%ld"), &lvalue);
 	// 得到连接点容器接口
-	CComQIPtr<IConnectionPointContainer> spContainer( m_comObj );
-	if( !spContainer )
-	{
-		AfxMessageBox( _T("组件没有提供连接点功能") );
-		return;
-	}
-	// 得到连接点接口
-	spContainer->FindConnectionPoint(__uuidof(ICallback), &m_spCP );
+	//CComQIPtr<IConnectionPointContainer> spContainer( m_comObj );
+	//if( !spContainer )
+	//{
+	//	AfxMessageBox( _T("组件没有提供连接点功能") );
+	//	return;
+	//}
+	//// 得到连接点接口
+	//spContainer->FindConnectionPoint(__uuidof(ICallback), &m_spCP );
 
-	if( !m_spCP )
-	{
-		AfxMessageBox( _T("没有找到连接点接口") );
-		return;
-	}
+	//if( !m_spCP )
+	//{
+	//	AfxMessageBox( _T("没有找到连接点接口") );
+	//	return;
+	//}
 
 	//	CComPtr<IUnknown> spUnk;		//得到接受器接口
 	//	m_sink.QueryInterface( IID_IUnknown, (LPVOID *)&spUnk );	//m_sink是接受器对象
 	//	hr=spCP->Advise( pUnk, &m_dwCookie);		//连接，m_dwCookie 是接受器cookie
 
 	// 上面这段程序，其实可以简化为：
-	HRESULT hr = m_spCP->Advise( &m_sink, &m_dwCookie );
-	if( FAILED( hr ) )
-	{
-		AfxMessageBox( _T("连接失败") );
-	}
-	else
-	{
-		AfxMessageBox( _T("已经连接成功") );
-	}
+	//HRESULT hr = m_spCP->Advise( &m_sink, &m_dwCookie );
+	//if( FAILED( hr ) )
+	//{
+	//	AfxMessageBox( _T("连接失败") );
+	//}
+	//else
+	//{
+	//	AfxMessageBox( _T("已经连接成功") );
+	//}
 
-	//调用接口的代码
-	m_comObj->GetGirl(5);
+	////调用接口的代码
+	//m_comObj->GetGirl(5);
 
-	if( m_spCP )
-	{
-		m_spCP->Unadvise( m_dwCookie );
-		m_spCP.Release();
-	}
-	AfxMessageBox( _T("已经断开连接") );
+	//if( m_spCP )
+	//{
+	//	//m_spCP->Unadvise( m_dwCookie );
+	//	m_spCP.Release();
+	//}
+	//AfxMessageBox( _T("已经断开连接") );
 
 	//m_comObj.Release();
+	//////////////////////////////////////////////////////
+	// another way to implement the interface and usage.
+	_Module.Init(NULL,theApp.m_hInstance);
+	LoveLib::IPeoplePtr m_pSourceUnk;
+	DWORD m_dwCustCookie;
+	// create source object
+	HRESULT hr = CoCreateInstance (LoveLib::CLSID_People, NULL, CLSCTX_ALL, 
+		LoveLib::IID_IPeople, (LPVOID*)&m_pSourceUnk);
+	_ASSERT (SUCCEEDED (hr));
+	//m_comObj->GetGirl(5);
+
+	// Create sink object.  CSink is a CComObjectRootEx-derived class 
+	// that implements the event interface methods.
+	CComObject<CSink> *pSinkClass;
+	CComObject<CSink>::CreateInstance (&pSinkClass);
+
+	hr = AtlAdvise (m_pSourceUnk, pSinkClass, LoveLib::IID_ICallback, &m_dwCustCookie);
+	m_pSourceUnk->GetGirl(lvalue);
+	hr = AtlUnadvise(m_pSourceUnk, LoveLib::IID_ICallback, m_dwCustCookie);
+
+	m_pSourceUnk.Release();
+	_Module.Term();
+
 }

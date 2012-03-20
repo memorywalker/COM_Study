@@ -32,11 +32,12 @@ public:
 	afx_msg void OnBnClickedBtnFind();
 private:
 	// 组件接口指针
-	IPeoplePtr m_comObj;
+	//LoveLib::IPeoplePtr m_comObj;
 	// 连接的 cookie
-	DWORD m_dwCookie;
+	//DWORD m_dwCookie;
 	// 连接点指针
-	CComQIPtr< IConnectionPoint > m_spCP;
+	//CComQIPtr< IConnectionPoint > m_spCP;
 	// 接收器对象
-	CSink m_sink;
+	//CSink m_sink;
+	//CComObject<CSink> *m_sink;
 };

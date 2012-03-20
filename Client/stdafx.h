@@ -34,11 +34,12 @@
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #include <afxcmn.h>             // MFC 对 Windows 公共控件的支持
 #endif // _AFX_NO_AFXCMN_SUPPORT
-
+#include <atlbase.h>
 #include <afxcontrolbars.h>     // 功能区和控件条的 MFC 支持
+#include <atlcom.h>
 
-
-#import "..\Love\Debug\Love.tlb" no_namespace
+extern CComModule _Module;   //CComObject<CSink>::CreateInstance (&pSinkClass); 在初始化时要用到CCModule
+#import "..\Love\Debug\Love.tlb" named_guids  //使用LoveLib::IPeoplePtr方式使用
 
 
 #ifdef _UNICODE

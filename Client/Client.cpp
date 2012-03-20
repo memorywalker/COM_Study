@@ -33,6 +33,7 @@ CClientApp::CClientApp()
 // 唯一的一个 CClientApp 对象
 
 CClientApp theApp;
+CComModule _Module;
 
 
 // CClientApp 初始化
@@ -54,6 +55,7 @@ BOOL CClientApp::InitInstance()
 
 	AfxEnableControlContainer();
 
+	//_Module.Init(NULL,m_hInstance);
 	// 创建 shell 管理器，以防对话框包含
 	// 任何 shell 树视图控件或 shell 列表视图控件。
 	CShellManager *pShellManager = new CShellManager;
